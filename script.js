@@ -1,41 +1,84 @@
-// Get the canvas element
-const canvas = document.getElementById('canvas');
-const ctx = canvas.getContext('2d');
+const videoElement = document.getElementById('webcam');
 
-// Request webcam access
-navigator.mediaDevices.getUserMedia({ video: true })
-	.then(stream => {
-		// Create a video element and set the stream as its source
-		const video = document.createElement('video');
-		video.srcObject = stream;
-		video.play();
-		video.style.display = 'block';
-		canvas.width = video.videoWidth;
-		canvas.height = video.videoHeight;
+async function setupCamera() {
+  const stream = await navigator.mediaDevices.getUserMedia({
+    video: { width: window.innerWidth, height: window.innerHeight }
+  });
+  videoElement.srcObject = stream;
+}
 
-		// Set up hand tracking
-		const handTracker = new Handtrack({
-			// Use the video element as the input
-			input: video,
-			// Set the canvas as the output
-			output: canvas,
-			// Configure hand tracking settings
-			settings: {
-				detectionConfidence: 0.5,
-				trackingConfidence: 0.5,
-			},
-		});
+setupCamera();
 
-		// Handle hand tracking results
-		handTracker.on('handTrackingResults', (results) => {
-			// Draw a circle at the tip of the index finger
-			if (results.handInViewConfidence > 0.5) {
-				const fingerTip = results.fingerTips[0];
-				ctx.beginPath();
-				ctx.arc(fingerTip.x, fingerTip.y, 10, 0, 2 * Math.PI);
-				ctx.fillStyle = 'red';
-				ctx.fill();
-			}
-		});
-	})
-	.catch(error => console.error('Error accessing webcam:', error));
+
+const videoElement = document.getElementById('webcam');
+
+async function setupCamera() {
+  const stream = await navigator.mediaDevices.getUserMedia({
+    video: { width: window.innerWidth, height: window.innerHeight }
+  });
+  videoElement.srcObject = stream;
+}
+
+setupCamera();
+
+const hands = new Hands({
+  locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
+});
+
+hands.setOptions({
+  maxNumHands: 1,
+  minDetectionConfidence: 0.7,
+  minTrackingConfidence: 0.5
+});
+
+hands.onResults((results) => {
+  // Process hand gesture results here
+  console.log(results);
+});
+
+const camera = new Camera(videoElement, {
+  onFrame: async () => {
+    await hands.send({ image: videoElement });
+  },
+  width: window.innerWidth,
+  height: window.innerHeight
+});
+
+camera.start();
+
+
+// Add to the onResults function
+hands.onResults((results) => {
+    if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
+      const landmarks = results.multiHandLandmarks[0];
+      
+      const indexFingerTip = landmarks[8];
+      const button1 = document.getElementById('button1');
+      const button2 = document.getElementById('button2');
+      
+      const cursorX = indexFingerTip.x * window.innerWidth;
+      const cursorY = indexFingerTip.y * window.innerHeight;
+  
+      if (isInsideElement(cursorX, cursorY, button1)) {
+        button1.style.backgroundColor = 'green';
+      } else {
+        button1.style.backgroundColor = 'red';
+      }
+  
+      if (isInsideElement(cursorX, cursorY, button2)) {
+        button2.style.backgroundColor = 'green';
+      } else {
+        button2.style.backgroundColor = 'red';
+      }
+    }
+  });
+  
+  function isInsideElement(x, y, element) {
+    const rect = element.getBoundingClientRect();
+    return (
+      x >= rect.left && x <= rect.right &&
+      y >= rect.top && y <= rect.bottom
+    );
+  }
+
+  
