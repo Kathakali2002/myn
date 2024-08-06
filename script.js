@@ -9,6 +9,9 @@ navigator.mediaDevices.getUserMedia({ video: true })
 		const video = document.createElement('video');
 		video.srcObject = stream;
 		video.play();
+		video.style.display = 'block';
+		canvas.width = video.videoWidth;
+		canvas.height = video.videoHeight;
 
 		// Set up hand tracking
 		const handTracker = new Handtrack({
