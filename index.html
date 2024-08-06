@@ -1,28 +1,18 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-	<title>Virtual Gesture-Driven Website</title>
-	<style>
-		/* Add some basic styling */
-		body {
-			background-color: #f0f0f0;
-		}
-		#canvas {
-			border: 1px solid #ccc;
-		}
-	</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js"></script>
+  <title>Hand Gesture Website</title>
 </head>
 <body>
-	<!-- Canvas element for rendering the video feed -->
-	<canvas id="canvas" width="640" height="480"></canvas>
-	<!-- Add some interactive elements (e.g., buttons) -->
-	<button id="button-1">Button 1</button>
-	<button id="button-2">Button 2</button>
-
-	<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/handpose@latest/dist/handpose.min.js"></script>
-	<script src="https://unpkg.com/handtrack.js@2.2.1/dist/handtrack.js"></script>
-
-	<script src="script.js"></script>
+  <video id="webcam" autoplay playsinline></video>
+  <div id="button1" class="button"></div>
+  <div id="button2" class="button"></div>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands"></script>
+  <script src="script.js"></script>
 </body>
 </html>
